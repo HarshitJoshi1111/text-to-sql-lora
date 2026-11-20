@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+.tmp/
+# WikiSQL, prepared data, predictions and adapters are downloaded or recreated (make data, make baseline)
+data/
+adapters/

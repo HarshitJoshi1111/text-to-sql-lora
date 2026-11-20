@@ -1,0 +1,20 @@
+{
+  "train": {
+    "questions": 56355,
+    "empty_result": 4368,
+    "error": 0,
+    "kept": 51987
+  },
+  "dev": {
+    "questions": 8421,
+    "empty_result": 659,
+    "error": 0,
+    "kept": 7762
+  },
+  "test": {
+    "questions": 15878,
+    "empty_result": 1298,
+    "error": 0,
+    "kept": 14580
+  }
+}
