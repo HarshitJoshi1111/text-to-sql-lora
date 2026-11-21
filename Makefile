@@ -1,4 +1,4 @@
-.PHONY: data download prepare baseline report test lint
+.PHONY: data download prepare baseline train report test lint
 
 download:
 	python -m src.download
@@ -10,6 +10,9 @@ data: download prepare
 
 baseline:
 	python -m src.evaluate --all
+
+train:
+	python -m src.train --run qwen2.5-0.5b-lora --evaluate
 
 report:
 	python -m src.report

@@ -16,3 +16,26 @@ evaluate:
     # fine-tuning on a 4-bit base model with LoRA adapters is QLoRA
     qwen2.5-0.5b: mlx-community/Qwen2.5-0.5B-Instruct-4bit
     qwen2.5-1.5b: mlx-community/Qwen2.5-1.5B-Instruct-4bit
+
+# LoRA fine-tuning with mlx-lm (python -m src.train --run NAME --evaluate)
+train:
+  defaults:
+    batch_size: 2             # 2 questions per step, gradients of 2 steps added up: 4 per update;
+    grad_accumulation: 2      # batches of 4 run out of memory on the 8 GB M1
+    grad_checkpoint: true     # recompute activations in the backward pass instead of storing them
+    iters: 2000               # 4,000 training questions (1,000 updates), about 8 % of the training set
+    learning_rate: 5.0e-5     # peak, after a linear warm-up (in updates), then cosine decay to a tenth
+    warmup: 50
+    num_layers: -1            # adapters in all transformer layers
+    rank: 8
+    scale: 20.0
+    dropout: 0.05
+    mask_prompt: true         # loss only on the SQL answer, not on the schema and question
+    max_seq_length: 768       # more than 99.9 % of the examples are shorter; the longer ones are left out
+    steps_per_eval: 200
+    val_batches: 50           # 100 validation questions per evaluation
+    save_every: 1000
+    seed: 0
+  runs:                       # each entry overrides the defaults
+    qwen2.5-0.5b-lora:
+      model: mlx-community/Qwen2.5-0.5B-Instruct-4bit
