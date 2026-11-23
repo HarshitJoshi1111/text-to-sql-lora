@@ -30,6 +30,12 @@ def test_execution_is_case_insensitive_for_text():
     assert execute("""SELECT MAX("Height (m)") FROM t WHERE "Player" LIKE '%long%'""", TABLE) == [(2.06,)]
 
 
+def test_case_is_ignored_beyond_ascii():
+    table = Table("1-2", ("Title", "Year"), ("text", "real"), (("Хромая судьба", 1986), ("Élan", 2001)))
+    assert execute("""SELECT "Year" FROM t WHERE "Title" = 'хромая судьба'""", table) == [(1986,)]
+    assert execute("""SELECT "Year" FROM t WHERE "Title" = 'élan'""", table) == [(2001,)]
+
+
 def test_numbers_stored_as_text_still_match():
     assert execute("""SELECT "Player" FROM t WHERE "No." = 3""", TABLE) == [("Kyle Lowry",)]
 

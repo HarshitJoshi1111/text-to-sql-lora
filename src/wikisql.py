@@ -3,7 +3,8 @@
 The dataset stores a query as a small logical form (selected column, aggregation, conditions);
 here it is turned into a real SQLite query on the table's real column names, and every table is
 loaded into an in-memory SQLite database so that both the true and a generated query can be run.
-Text columns compare case-insensitively (COLLATE NOCASE), as the official WikiSQL evaluation does.
+Text columns compare case-insensitively, as the official WikiSQL evaluation does (for all letters, not
+only A-Z as SQLite's own NOCASE).
 """
 import json
 import sqlite3
@@ -84,11 +85,18 @@ def to_sql(logical_form: dict, table: Table) -> str:
     return sql
 
 
+def compare_ignoring_case(a: str, b: str) -> int:
+    """Collation for text columns: like NOCASE, but 'Хромая' = 'хромая' too."""
+    a, b = a.casefold(), b.casefold()
+    return (a > b) - (a < b)
+
+
 @lru_cache(maxsize=256)
 def connection(table: Table) -> sqlite3.Connection:
     """In-memory database holding one table; text columns compare case-insensitively."""
     db = sqlite3.connect(":memory:", check_same_thread=False)
-    columns = ", ".join(f"{quote_name(c)} {'REAL' if ty == 'real' else 'TEXT COLLATE NOCASE'}"
+    db.create_collation("ignore_case", compare_ignoring_case)
+    columns = ", ".join(f"{quote_name(c)} {'REAL' if ty == 'real' else 'TEXT COLLATE ignore_case'}"
                         for c, ty in zip(table.columns, table.types, strict=True))
     db.execute(f"CREATE TABLE {TABLE} ({columns})")
     db.executemany(f"INSERT INTO {TABLE} VALUES ({', '.join('?' * len(table.columns))})", table.rows)

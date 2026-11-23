@@ -2,6 +2,7 @@
 
     python -m src.train --run qwen2.5-0.5b-lora              train a run from params.yaml
     python -m src.train --run qwen2.5-0.5b-lora --evaluate   and score it on the evaluation set
+    python -m src.train --run A B C --evaluate                several runs one after another
 
 The base model stays frozen (and 4-bit quantised, which makes this QLoRA); only small low-rank
 matrices added to every linear layer are trained, about 1 % of the parameters. The loss is computed
@@ -110,6 +111,10 @@ def train(run: str, params: dict) -> dict:
     args = lora_args(run, settings)
     np.random.seed(args.seed)
     model, tokenizer = load(args.model)
+    if settings.get("dtype"):  # the 4-bit models keep scales and norms in float16, whose range can overflow
+        import mlx.core as mx
+
+        model.set_dtype(getattr(mx, settings["dtype"]))  # only floating-point weights; the 4-bit ones stay
     _, filtered = fitting_examples(tokenizer, args.max_seq_length)
     print(f"{run}: examples longer than {args.max_seq_length} tokens left out: {filtered}", flush=True)
     train_set, valid_set, _ = load_dataset(args, tokenizer)
@@ -137,16 +142,17 @@ def train(run: str, params: dict) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run", required=True)
+    parser.add_argument("--run", required=True, nargs="+", help="run name(s) from params.yaml")
     parser.add_argument("--evaluate", action="store_true", help="score the adapter on the evaluation set afterwards")
     args = parser.parse_args()
     params = load_params()
-    train(args.run, params)
-    if args.evaluate:
-        from src.evaluate import evaluate
+    for run in args.run:
+        train(run, params)
+        if args.evaluate:
+            from src.evaluate import evaluate
 
-        adapter = str((ADAPTERS / args.run).relative_to(ROOT))  # relative, so the report holds no local path
-        evaluate(args.run, run_settings(params, args.run)["model"], adapter, params)
+            adapter = str((ADAPTERS / run).relative_to(ROOT))  # relative, so the report holds no local path
+            evaluate(run, run_settings(params, run)["model"], adapter, params)
 
 
 if __name__ == "__main__":

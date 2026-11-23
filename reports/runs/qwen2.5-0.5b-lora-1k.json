@@ -1,0 +1,42 @@
+{
+  "name": "qwen2.5-0.5b-lora-1k",
+  "model": "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
+  "adapter": "adapters/qwen2.5-0.5b-lora-1k",
+  "questions": 500,
+  "execution_accuracy": 0.732,
+  "exact_match": 0.656,
+  "runs": 0.968,
+  "outcomes": {
+    "correct": 366,
+    "wrong_where": 71,
+    "wrong_select": 25,
+    "wrong_both": 22,
+    "unknown_column": 14,
+    "syntax": 2
+  },
+  "by_aggregation": {
+    "none": {
+      "n": 371,
+      "accuracy": 0.7763
+    },
+    "aggregate": {
+      "n": 129,
+      "accuracy": 0.6047
+    }
+  },
+  "by_conditions": {
+    "0-1": {
+      "n": 376,
+      "accuracy": 0.734
+    },
+    "2": {
+      "n": 93,
+      "accuracy": 0.7849
+    },
+    "3+": {
+      "n": 31,
+      "accuracy": 0.5484
+    }
+  },
+  "seconds_per_question": 0.514
+}

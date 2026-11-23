@@ -3,18 +3,18 @@
   "model": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
   "adapter": null,
   "questions": 500,
-  "execution_accuracy": 0.464,
+  "execution_accuracy": 0.466,
   "exact_match": 0.346,
   "runs": 0.63,
   "outcomes": {
-    "correct": 232,
+    "correct": 233,
     "syntax": 96,
     "unknown_column": 72,
     "wrong_where": 33,
     "wrong_both": 24,
     "wrong_select": 18,
     "other_error": 17,
-    "wrong_other": 6,
+    "wrong_other": 5,
     "wrong_same_text": 2
   },
   "by_aggregation": {
@@ -24,13 +24,13 @@
     },
     "aggregate": {
       "n": 129,
-      "accuracy": 0.3333
+      "accuracy": 0.3411
     }
   },
   "by_conditions": {
     "0-1": {
       "n": 376,
-      "accuracy": 0.4787
+      "accuracy": 0.4814
     },
     "2": {
       "n": 93,

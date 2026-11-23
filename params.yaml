@@ -37,5 +37,25 @@ train:
     save_every: 1000
     seed: 0
   runs:                       # each entry overrides the defaults
-    qwen2.5-0.5b-lora:
+    qwen2.5-0.5b-lora:        # main run: 4,000 training questions
       model: mlx-community/Qwen2.5-0.5B-Instruct-4bit
+    # ablations: the same seed gives the same order of training questions, so a shorter run sees
+    # the first part of the questions of a longer one
+    qwen2.5-0.5b-lora-1k:     # training-set size: 1,000 and 2,000 questions
+      model: mlx-community/Qwen2.5-0.5B-Instruct-4bit
+      iters: 500
+    qwen2.5-0.5b-lora-2k:
+      model: mlx-community/Qwen2.5-0.5B-Instruct-4bit
+      iters: 1000
+    qwen2.5-0.5b-lora-2k-r4:  # LoRA rank 4 and 16 (rank 8 above)
+      model: mlx-community/Qwen2.5-0.5B-Instruct-4bit
+      iters: 1000
+      rank: 4
+    qwen2.5-0.5b-lora-2k-r16:
+      model: mlx-community/Qwen2.5-0.5B-Instruct-4bit
+      iters: 1000
+      rank: 16
+    qwen2.5-1.5b-lora-2k:     # the larger model with the same 2,000 questions
+      model: mlx-community/Qwen2.5-1.5B-Instruct-4bit
+      iters: 1000
+      dtype: float32          # training loss turned NaN in float16 (as stored, iteration 10) and bfloat16 (iteration 90)
